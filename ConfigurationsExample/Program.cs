@@ -11,9 +11,11 @@ namespace ConfigurationsExample
     {
         static async Task Main(string[] args)
         {
-            args = new string[] {
-                "Level1:Level2:Value1=1"
-            };
+            // Override configuration with command-line arguments.
+            //args = new string[] {
+            //    "Level1:Level2:Value1=1",
+            //    "Level1:Level2:Value2=2"
+            //};
 
             var host = CreateHostBuilder(args).Build();
 
@@ -24,6 +26,9 @@ namespace ConfigurationsExample
                 try
                 {
                     var type1 = services.GetRequiredService<Type1>();
+
+                    var options = services.GetRequiredService<IOptions<Level2Configuration>>();
+                    var value1 = options.Value.Value1;
                 }
                 catch (Exception ex)
                 {
@@ -39,13 +44,11 @@ namespace ConfigurationsExample
             Host.CreateDefaultBuilder(args)
             .ConfigureServices((hostBuilderContext, services) =>
             {
-
                 services.AddOptions();
 
                 var configuration = hostBuilderContext.Configuration;
-                var configurationSection = configuration.GetSection("Level1");
-
-                services.Configure<Level1Configuration>(configurationSection);
+                services.Configure<Level1Configuration>(configuration.GetSection("Level1"));
+                services.Configure<Level2Configuration>(configuration.GetSection("Level1:Level2"));
 
                 services.AddScoped<Type1>();
 
@@ -75,6 +78,7 @@ namespace ConfigurationsExample
             _level1Configuration = options.CurrentValue;
 
             _logger.LogInformation("Value1: {value1}", _level1Configuration.Level2.Value1);
+            _logger.LogInformation("Value2: {value2}", _level1Configuration.Level2.Value2);
         }
     }
 }
