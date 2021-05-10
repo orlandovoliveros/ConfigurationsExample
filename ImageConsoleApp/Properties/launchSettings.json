@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ImageConsoleApp": {
+      "commandName": "Project",
+      "commandLineArgs": "backpack.jpg"
+    }
+  }
+}
